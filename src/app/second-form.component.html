@@ -2,24 +2,25 @@
     Dynamic (Reactive) form
 </p>
 <form [formGroup]="form">
-    <p-panel header="Some tri-state">
-        <label>A tri state</label>
-        <p-triStateCheckbox name="someTriState" formControlName="triState"></p-triStateCheckbox>
+    <p-panel *ngFor="let filter of filters" [header]="filter.name">
+        <div [ngSwitch]="filter.type">
+            <div *ngSwitchCase="'flag'">
+                <label>{{filter.name}}</label>
+                <p-triStateCheckbox [name]="filter.id" [formControlName]="filter.id"></p-triStateCheckbox>
+            </div>
+            <div *ngSwitchCase="'singleChoice'">
+                <p-dropdown [options]="options[filter.id]" [formControlName]="filter.id"></p-dropdown>
+            </div>
+            <div *ngSwitchCase="'multiChoice'">
+                <p-multiSelect  [options]="options[filter.id]" [formControlName]="filter.id"></p-multiSelect>
+            </div>
+            <div *ngSwitchDefault>
+                An error Unknwon filter type: {{filter.type}} for filter: {{filter.name}}
+            </div>
+        </div>
     </p-panel>
-    <p-panel header="Some Options">
-        <p-checkbox *ngFor="let option of allOptions" name="theThing" [value]="option.value" [label]="option.label"
-                    formControlName="checkBox"></p-checkbox>
-    </p-panel>
-    <p-panel header="Multi Select">
-        <p-multiSelect name="theOtherThing" [options]="allOptions" formControlName="multiSelect"></p-multiSelect>
-    </p-panel>
-    <p-panel header="Single Select">
-        <p-dropdown name="theOtherThing" [options]="allOptionsAndNull" formControlName="dropDown"></p-dropdown>
-    </p-panel>
-
-
 </form>
-<p-panel header="Model raw">
+<p-panel header="(Debug) --> Model contents">
     <pre>{{ form.value | json}}</pre>
 </p-panel>
 

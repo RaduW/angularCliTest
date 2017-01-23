@@ -12,75 +12,83 @@ export class SecondFormComponent implements OnInit {
 
     form: FormGroup;
 
+    filters: UiFilter[];
     allOptions: SelectItem[];
     allOptionsAndNull: SelectItem[];
+    options : any;
 
     constructor() {
     }
 
     ngOnInit() {
         this.form = new FormGroup({});
-        this.form.addControl('triState', new FormControl());
-        this.form.addControl('checkBox', new FormControl([]));
-        this.form.addControl('dropDown', new FormControl());
-        this.form.addControl('multiSelect', new FormControl([]));
-        this.allOptionsAndNull = [
-            {label: 'Choose', value: null},
-            {label: 'New York', value: 'New York'},
-            {label: 'Rome', value: 'Rome'},
-            {label: 'London', value: 'London'},
-            {label: 'Istanbul', value: 'Istanbul'},
-            {label: 'Johannesburg', value: 'Johannesburg'},
-            {label: 'Sydney', value: 'Sydney'},
-            {label: 'Paris', value: 'Paris'},
-            {label: 'Toronto', value: 'Toronto'},
+        let settings = getSettings();
+        this.filters =  settings.simple;
+        this.options = {};
 
-        ];
-        this.allOptions = [
-            {label: 'New York', value: 'New York'},
-            {label: 'Rome', value: 'Rome'},
-            {label: 'London', value: 'London'},
-            {label: 'Istanbul', value: 'Istanbul'},
-            {label: 'Johannesburg', value: 'Johannesburg'},
-            {label: 'Sydney', value: 'Sydney'},
-            {label: 'Paris', value: 'Paris'},
-            {label: 'Toronto', value: 'Toronto'},
-        ]
+        for( let item of this.filters ){
+            switch( item.type){
+                case "flag":
+                    this.form.addControl(item.id, new FormControl());
+                    break;
+                case "multiChoice":
+                    this.form.addControl(item.id, new FormControl([]));
+                    this.options[item.id] = SecondFormComponent.filterOptions(item.values, false);
+                    break;
+                case "singleChoice":
+                    this.form.addControl(item.id, new FormControl([]));
+                    this.options[item.id] = SecondFormComponent.filterOptions(item.values, true);
+                    break;
+                default:
+                    console.error(`Unsupported filter of type: ${item.type}`);
 
+            }
+        }
+    }
+
+    static filterOptions(values:UiLabel[], addDefault:boolean):SelectItem[]{
+        let retVal:SelectItem[]= [];
+        if ( addDefault){
+            retVal.push({label: 'Choose', value: null});
+        }
+        for ( let value of values){
+            retVal.push({label:value.name, value:value.id});
+        }
+        return retVal;
     }
 }
 
-type FilterUiType = "flag"|"multiChoice"|"singleChoice";
+export type FilterUiType = "flag"|"multiChoice"|"singleChoice";
 
-interface UiLabel {
+export interface UiLabel {
     id: string;
     name: string;
     description?: string;
 }
 
-interface UiSetting extends UiLabel {
+export interface UiSetting extends UiLabel {
     userId?: string;
     simple?: UiFilter[];
     hierarchy?: UiHierarchyFilter;
 }
 
-interface UiFilter extends UiLabel {
+export interface UiFilter extends UiLabel {
     type: FilterUiType;
     values?: UiLabel[]
 }
 
-interface UiHierarchyLevelFilter {
+export interface UiHierarchyLevelFilter {
     id: string;
     config?: string[];
 }
 
-interface UiHierarchyFilter {
+export interface UiHierarchyFilter {
     name: string;
     description: string;
     levels: UiHierarchyLevelFilter[];
 }
 
-function getSetting(): UiSetting|null {
+function getSettings(): UiSetting|null {
     return {
         id: "basic",
         name: "Test",
