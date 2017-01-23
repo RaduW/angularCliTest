@@ -1,0 +1,26 @@
+<p>
+    Dynamic (Reactive) form
+</p>
+<form [formGroup]="form">
+    <p-panel header="Some tri-state">
+        <label>A tri state</label>
+        <p-triStateCheckbox name="someTriState" formControlName="triState"></p-triStateCheckbox>
+    </p-panel>
+    <p-panel header="Some Options">
+        <p-checkbox *ngFor="let option of allOptions" name="theThing" [value]="option.value" [label]="option.label"
+                    formControlName="checkBox"></p-checkbox>
+    </p-panel>
+    <p-panel header="Multi Select">
+        <p-multiSelect name="theOtherThing" [options]="allOptions" formControlName="multiSelect"></p-multiSelect>
+    </p-panel>
+    <p-panel header="Single Select">
+        <p-dropdown name="theOtherThing" [options]="allOptionsAndNull" formControlName="dropDown"></p-dropdown>
+    </p-panel>
+
+
+</form>
+<p-panel header="Model raw">
+    <pre>{{ form.value | json}}</pre>
+</p-panel>
+
+

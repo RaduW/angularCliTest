@@ -1,0 +1,25 @@
+<p>
+    Static form
+</p>
+<div>
+    <form>
+        <p-panel header="Some tri-state">
+            <label>A tri state</label>
+            <p-triStateCheckbox name="someTriState" [(ngModel)]="triState"></p-triStateCheckbox>
+        </p-panel>
+        <p-panel header="Some Options">
+            <p-checkbox *ngFor="let option of allOptions" name="theThing" [value]="option.value" [label]="option.label" [(ngModel)]="checkOptions"></p-checkbox>
+        </p-panel>
+        <p-panel header="Multi Select">
+            <p-multiSelect name="theOtherThing" [options]="allOptions"  [(ngModel)]="multiOptions" ></p-multiSelect>
+        </p-panel>
+        <p-panel header="Single Select">
+            <p-dropdown name="theOtherThing" [options]="allOptionsAndNull"  [(ngModel)]="singleOption" ></p-dropdown>
+        </p-panel>
+    </form>
+    <p-panel header="Model raw">
+        <pre>Tri State {{ triState| json }}
+CheckBox {{ checkOptions| json }}
+MultiSelect {{ multiOptions | json }}</pre>
+    </p-panel>
+</div>
