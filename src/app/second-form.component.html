@@ -19,9 +19,20 @@
             </div>
         </div>
     </p-panel>
+    <p-panel header = 'the Tree'>
+        <p-tree selectionMode="single"
+                [(selection)]="treeSelection"
+                [value]="treeContent"
+                (onNodeSelect)="onNodeSelected($event)"
+                (onNodeExpand)="onNodeExpand($event)">
+        </p-tree>
+    </p-panel>
 </form>
 <p-panel header="(Debug) --> Model contents">
-    <pre>{{ form.value | json}}</pre>
+    <pre>{{ form.value | json}}
+{{ selectionForDisplay | json}}
+{{ treeConfig | json}}
+    </pre>
 </p-panel>
 
 

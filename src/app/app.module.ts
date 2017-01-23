@@ -5,7 +5,7 @@ import {HttpModule} from '@angular/http';
 import {Routes, RouterModule} from '@angular/router';
 import {
     TriStateCheckboxModule, CheckboxModule, FieldsetModule, PanelModule, MultiSelectModule,
-    DropdownModule, ButtonModule
+    DropdownModule, ButtonModule, TreeModule
 } from 'primeng/primeng';
 
 import {AppComponent} from './app.component';
@@ -29,8 +29,9 @@ const appRoutes: Routes = [
         BrowserModule,
         FormsModule, ReactiveFormsModule,
         HttpModule,
+        //PrimeNg modules
         TriStateCheckboxModule, CheckboxModule, FieldsetModule, PanelModule, MultiSelectModule, DropdownModule,
-        ButtonModule
+        ButtonModule, TreeModule
     ],
     providers: [],
     bootstrap: [AppComponent]

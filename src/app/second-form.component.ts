@@ -1,7 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 
 import {FormControl, FormGroup} from '@angular/forms';
-import {SelectItem} from "primeng/components/common/api";
+import {SelectItem, TreeNode} from "primeng/components/common/api";
+import * as R from "ramda";
 
 @Component({
     selector: 'app-second-form',
@@ -15,9 +16,14 @@ export class SecondFormComponent implements OnInit {
     filters: UiFilter[];
     allOptions: SelectItem[];
     allOptionsAndNull: SelectItem[];
+    treeSelection: TreeNode;
+    treeContent: TreeNode[];
+    treeConfig:string[];
     options : any;
+    selectionForDisplay:any;
 
     constructor() {
+
     }
 
     ngOnInit() {
@@ -44,6 +50,9 @@ export class SecondFormComponent implements OnInit {
 
             }
         }
+        this. treeSelection = null;
+        this.treeContent = getRootContent();
+        this.treeConfig =  getTreeConfig(settings)
     }
 
     static filterOptions(values:UiLabel[], addDefault:boolean):SelectItem[]{
@@ -55,6 +64,16 @@ export class SecondFormComponent implements OnInit {
             retVal.push({label:value.name, value:value.id});
         }
         return retVal;
+    }
+
+    onNodeSelected({node}:{node:TreeNode}){
+        this.selectionForDisplay = R.compose(R.dissoc('parent'), R.dissoc('children'))(node);
+        console.log(node);
+
+    }
+    onNodeExpand({node}:{node:TreeNode}){
+        node.children = getTreeContent();
+
     }
 }
 
@@ -77,8 +96,7 @@ export interface UiFilter extends UiLabel {
     values?: UiLabel[]
 }
 
-export interface UiHierarchyLevelFilter {
-    id: string;
+export interface UiHierarchyLevelFilter extends UiLabel {
     config?: string[];
 }
 
@@ -87,6 +105,67 @@ export interface UiHierarchyFilter {
     description: string;
     levels: UiHierarchyLevelFilter[];
 }
+function getRootContent():TreeNode[]{
+    return [
+        {
+
+            label: "Root",
+            data: "root",
+            expandedIcon: "fa-circle",
+            collapsedIcon: "fa-circle-o",
+            leaf: false,
+            children: getTreeContent()
+        }];
+}
+
+function getTreeContent(): TreeNode[]{
+    return R.clone([
+        {
+
+            label: "Mumu",
+            data: "mumu",
+            //expandedIcon: "fa-circle",
+            //collapsedIcon: "fa-circle",
+            leaf: false
+        },
+        {
+            label: "Pupu",
+            data: "pupu",
+            //expandedIcon: "fa-circle",
+            //collapsedIcon: "fa-circle",
+            leaf: false
+        },
+        {
+            label: "Cucu",
+            data: "cucu",
+            //expandedIcon: "fa-circle",
+            //collapsedIcon: "fa-circle",
+            leaf: false
+        },
+        {
+            label: "Lulu",
+            data: "lulu",
+            //expandedIcon: "fa-circle",
+            //collapsedIcon: "fa-circle",
+            leaf: false
+        }
+    ]);
+}
+
+function getTreeConfig(settings:UiSetting):string[]{
+    let retVal = [];
+    for ( let filter of settings.hierarchy.levels){
+        if ( filter.config){
+            for( let param of filter.config ){
+                retVal.push(`${filter.id}:${param}`);
+            }
+        }
+        else{
+            retVal.push(filter.id);
+        }
+    }
+    return retVal;
+}
 
 function getSettings(): UiSetting|null {
     return {
@@ -94,6 +173,12 @@ function getSettings(): UiSetting|null {
         name: "Test",
         description: "this is a test",
         simple: [
+            {
+                id: "converted",
+                name: "Converted",
+                description: "is Converted",
+                type: "flag"
+            },
             {
                 id: "emitent",
                 name: "Emitent",
@@ -143,6 +228,25 @@ function getSettings(): UiSetting|null {
                 description: "is published",
                 type: "flag"
             }
-        ]
+        ],
+        hierarchy: {
+            name: "some_hierarchy",
+            description: "some hierarchy description",
+            levels:[
+                {
+                    id:"filter1",
+                    name:"Filter 1 name"
+                },
+                {
+                    id:"publicationDate",
+                    name:"Publication Date",
+                    config:["Y", "M"]
+                },
+                {
+                    id:"filter2",
+                    name:"Filter 2 name"
+                },
+            ]
+        }
     }
 }
