@@ -52,7 +52,7 @@ export class SecondFormComponent implements OnInit {
         }
         this. treeSelection = null;
         this.treeContent = getRootContent();
-        this.treeConfig =  getTreeConfig(settings)
+        this.treeConfig =  getTreeConfig(settings);
     }
 
     static filterOptions(values:UiLabel[], addDefault:boolean):SelectItem[]{
@@ -72,8 +72,16 @@ export class SecondFormComponent implements OnInit {
 
     }
     onNodeExpand({node}:{node:TreeNode}){
-        node.children = getTreeContent();
+        // if ( node.children == null)
+        //     node.children = getTreeContent();
+    }
 
+    onNavigate(){
+        this.treeSelection = this.treeContent[0].children[1].children[2];
+        this.treeContent[0].expanded=true;
+        this.treeContent[0].children[1].expanded = true;
+        //this.treeContent[0].children[1].children[2].expanded = true;
+        console.log(this.treeSelection);
     }
 }
 
@@ -106,7 +114,7 @@ export interface UiHierarchyFilter {
     levels: UiHierarchyLevelFilter[];
 }
 function getRootContent():TreeNode[]{
-    return [
+    let retVal = [
         {
 
             label: "Root",
@@ -116,6 +124,17 @@ function getRootContent():TreeNode[]{
             leaf: false,
             children: getTreeContent()
         }];
+
+    for ( const node of retVal[0].children)
+    {
+        node.children = getTreeContent();
+        for ( const node2 of node.children)
+        {
+            node2.children = getTreeContent();
+        }
+    }
+
+    return retVal;
 }
 
 function getTreeContent(): TreeNode[]{

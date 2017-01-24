@@ -26,6 +26,7 @@
                 (onNodeSelect)="onNodeSelected($event)"
                 (onNodeExpand)="onNodeExpand($event)">
         </p-tree>
+        <button pButton type="button" label="Navigate in tree" (click)="onNavigate()"></button>
     </p-panel>
 </form>
 <p-panel header="(Debug) --> Model contents">
