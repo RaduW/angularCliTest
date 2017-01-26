@@ -3,6 +3,13 @@ import {Component, OnInit} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {SelectItem, TreeNode} from "primeng/components/common/api";
 import * as R from "ramda";
+import {UiFilterElement, UiSetting, UiHierarchyLevelFilter, getHierarchyLevels} from "./ui-setting";
+import {UiLabel} from "./ui-label";
+import {UiSettingsService} from "./service/ui-settings.service";
+import {UiFilter} from "./ui-filter";
+import {ServerHierarchyNode} from "./service/server-hierarchy-node";
+import {TreeHierarchyAdapterService} from "./service/tree-hierarchy-adapter.service";
+import {getFilterAndCategory, getFilterForNode} from "./tree-node-uitl";
 
 @Component({
     selector: 'app-second-form',
@@ -12,23 +19,37 @@ import * as R from "ramda";
 export class SecondFormComponent implements OnInit {
 
     form: FormGroup;
-
-    filters: UiFilter[];
-    allOptions: SelectItem[];
-    allOptionsAndNull: SelectItem[];
+    filters: UiFilterElement[];
     treeSelection: TreeNode;
+    hierarchyFilterNames: string[];
     treeContent: TreeNode[];
-    treeConfig:string[];
     options : any;
-    selectionForDisplay:any;
+    globalFilter: UiFilter;
 
-    constructor() {
 
-    }
+    constructor(private uiSettingsService:UiSettingsService, private hierarchyService:TreeHierarchyAdapterService) {}
 
     ngOnInit() {
         this.form = new FormGroup({});
-        let settings = getSettings();
+
+        this.form.valueChanges.subscribe(value => this.onFilterValueChanges(value));
+
+        this.uiSettingsService.getUiSetting("first").subscribe(
+            (settings:UiSetting)=>{ this.onUiSettingsChanged(settings);}
+        );
+
+    }
+
+    private onFilterValueChanges(value:any){
+        //this.globalFilter = this.getContentsFilter(this.treeSelection);
+        console.log(value);
+        if ( this.treeSelection)
+            this.globalFilter = R.merge(value, getFilterForNode(this.treeSelection,this.hierarchyFilterNames));
+        else
+            this.globalFilter = value;
+    }
+
+    private onUiSettingsChanged(settings:UiSetting){
         this.filters =  settings.simple;
         this.options = {};
 
@@ -50,9 +71,9 @@ export class SecondFormComponent implements OnInit {
 
             }
         }
-        this. treeSelection = null;
+        this.treeSelection = null;
         this.treeContent = getRootContent();
-        this.treeConfig =  getTreeConfig(settings);
+        this.hierarchyFilterNames = getHierarchyLevels(settings.hierarchy.levels);
     }
 
     static filterOptions(values:UiLabel[], addDefault:boolean):SelectItem[]{
@@ -67,13 +88,15 @@ export class SecondFormComponent implements OnInit {
     }
 
     onNodeSelected({node}:{node:TreeNode}){
-        this.selectionForDisplay = R.compose(R.dissoc('parent'), R.dissoc('children'))(node);
-        console.log(node);
-
+        this.globalFilter = R.merge(this.form.value,  getFilterForNode(node,this.hierarchyFilterNames));
     }
     onNodeExpand({node}:{node:TreeNode}){
-        // if ( node.children == null)
-        //     node.children = getTreeContent();
+        const {filter,category,isLeaf} = getFilterAndCategory(node,this.hierarchyFilterNames);
+        if ( ! node.children && ! node.leaf ){
+            this.hierarchyService.getChildren(filter,category,isLeaf).subscribe(children =>{
+                node.children = children;
+            });
+        }
     }
 
     onNavigate(){
@@ -83,189 +106,38 @@ export class SecondFormComponent implements OnInit {
         //this.treeContent[0].children[1].children[2].expanded = true;
         console.log(this.treeSelection);
     }
-}
 
-export type FilterUiType = "flag"|"multiChoice"|"singleChoice";
-
-export interface UiLabel {
-    id: string;
-    name: string;
-    description?: string;
-}
-
-export interface UiSetting extends UiLabel {
-    userId?: string;
-    simple?: UiFilter[];
-    hierarchy?: UiHierarchyFilter;
-}
-
-export interface UiFilter extends UiLabel {
-    type: FilterUiType;
-    values?: UiLabel[]
-}
-
-export interface UiHierarchyLevelFilter extends UiLabel {
-    config?: string[];
-}
-
-export interface UiHierarchyFilter {
-    name: string;
-    description: string;
-    levels: UiHierarchyLevelFilter[];
-}
-function getRootContent():TreeNode[]{
-    let retVal = [
-        {
-
-            label: "Root",
-            data: "root",
-            expandedIcon: "fa-circle",
-            collapsedIcon: "fa-circle-o",
-            leaf: false,
-            children: getTreeContent()
-        }];
-
-    for ( const node of retVal[0].children)
-    {
-        node.children = getTreeContent();
-        for ( const node2 of node.children)
-        {
-            node2.children = getTreeContent();
-        }
+    getContentsFilter(node:TreeNode):UiFilter{
+        const filters = this.form.value;
+        const hierachyFilter = node? getFilterForNode(node,this.hierarchyFilterNames) : null;
+        return R.merge(filters,hierachyFilter);
     }
 
-    return retVal;
 }
 
-function getTreeContent(): TreeNode[]{
-    return R.clone([
-        {
-
-            label: "Mumu",
-            data: "mumu",
-            //expandedIcon: "fa-circle",
-            //collapsedIcon: "fa-circle",
-            leaf: false
-        },
-        {
-            label: "Pupu",
-            data: "pupu",
-            //expandedIcon: "fa-circle",
-            //collapsedIcon: "fa-circle",
-            leaf: false
-        },
-        {
-            label: "Cucu",
-            data: "cucu",
-            //expandedIcon: "fa-circle",
-            //collapsedIcon: "fa-circle",
-            leaf: false
-        },
-        {
-            label: "Lulu",
-            data: "lulu",
-            //expandedIcon: "fa-circle",
-            //collapsedIcon: "fa-circle",
-            leaf: false
-        }
-    ]);
+interface ITreeData{
+    filter: {[name:string]:number|string} ;
+    category: string;
 }
 
-function getTreeConfig(settings:UiSetting):string[]{
-    let retVal = [];
-    for ( let filter of settings.hierarchy.levels){
-        if ( filter.config){
-            for( let param of filter.config ){
-                retVal.push(`${filter.id}:${param}`);
-            }
-        }
-        else{
-            retVal.push(filter.id);
-        }
-    }
-    return retVal;
+function serverNodesToTreeNodes(serverNodes : ServerHierarchyNode[]){
+    return null;
 }
 
-function getSettings(): UiSetting|null {
-    return {
-        id: "basic",
-        name: "Test",
-        description: "this is a test",
-        simple: [
-            {
-                id: "converted",
-                name: "Converted",
-                description: "is Converted",
-                type: "flag"
-            },
-            {
-                id: "emitent",
-                name: "Emitent",
-                description: "Emitent type",
-                type: "singleChoice",
-                values: [
-                    {
-                        id: "ministerul_apararii",
-                        name: "Ministerul Apararii"
-                    },
-                    {
-                        id: "ministerul_afacerilor_interne",
-                        name: "Ministerul Afacerilor Interne"
-                    },
-                    {
-                        id: "ministerul_educatiei",
-                        name: "Ministerul Educatiei"
-                    }
-                ]
-            },
-            {
-                id: "publicationType",
-                name: "Publication Type",
-                description: "Publication Type",
-                type: "multiChoice",
-                values: [
-                    {
-                        id: "monitorul_oficial",
-                        name: "Monitorul Oficial",
-                        description: "Monitorul Oficial"
-                    },
-                    {
-                        id: "revista_legi_si_retete",
-                        name: "Revista Legi si Retete",
-                        description: "Revista Legi si Retete",
-                    },
-                    {
-                        id: "biroul_electoral_municipal_bucuresti",
-                        description : "Biroul Electoral Municipal Bucuresti",
-                        name : "Biroul Electoral Municipal Bucuresti"
-                    }
-                ]
-            },
-            {
-                id: "published",
-                name: "Published",
-                description: "is published",
-                type: "flag"
-            }
-        ],
-        hierarchy: {
-            name: "some_hierarchy",
-            description: "some hierarchy description",
-            levels:[
-                {
-                    id:"filter1",
-                    name:"Filter 1 name"
-                },
-                {
-                    id:"publicationDate",
-                    name:"Publication Date",
-                    config:["Y", "M"]
-                },
-                {
-                    id:"filter2",
-                    name:"Filter 2 name"
-                },
-            ]
-        }
-    }
+function getRootContent():TreeNode[] {
+    return [{
+        label: "Root",
+        data: null,
+        expandedIcon: "fa-circle",
+        collapsedIcon: "fa-circle-o",
+        leaf: false,
+        //children: null
+    }];
 }
+
+
+
+
+
+
+

@@ -1,0 +1,6 @@
+[
+    {"name":"Lege", "id":"lege"},
+    {"name":"Directiva", "id":"directiva"},
+    {"name":"Hotarire", "id":"hotarire"},
+    {"name":"Decret", "id":"decret"}
+]

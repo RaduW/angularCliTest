@@ -1,0 +1,84 @@
+{
+    "id": "basic",
+    "name": "Test",
+    "description": "this is a test",
+    "simple": [
+        {
+            "id": "converted",
+            "name": "Converted",
+            "description": "is Converted",
+            "type": "flag"
+        },
+        {
+            "id": "emitent",
+            "name": "Emitent",
+            "description": "Emitent type",
+            "type":"singleChoice",
+            "values": [
+                {
+                    "id": "ministerul_apararii",
+                    "name": "Ministerul Apararii"
+                },
+                {
+                    "id": "ministerul_afacerilor_interne",
+                    "name": "Ministerul Afacerilor Interne"
+                },
+                {
+                    "id": "ministerul_educatiei",
+                    "name": "Ministerul Educatiei"
+                }
+            ]
+        },
+        {
+            "id": "publicationType",
+            "name": "Publication Type",
+            "description": "Publication Type",
+            "type": "multiChoice",
+            "values": [
+                {
+                    "id": "monitorul_oficial",
+                    "name": "Monitorul Oficial",
+                    "description": "Monitorul Oficial"
+                },
+                {
+                    "id": "revista_legi_si_retete",
+                    "name": "Revista Legi si Retete",
+                    "description": "Revista Legi si Retete"
+                },
+                {
+                    "id": "biroul_electoral_municipal_bucuresti",
+                    "description": "Biroul Electoral Municipal Bucuresti",
+                    "name": "Biroul Electoral Municipal Bucuresti"
+                }
+            ]
+        },
+        {
+            "id": "published",
+            "name": "Published",
+            "description": "is published",
+            "type": "flag"
+        }
+    ],
+    "hierarchy": {
+        "name": "some_hierarchy",
+        "description": "some hierarchy description",
+        "levels": [
+            {
+                "id": "documentType",
+                "name": "Document Type"
+            },
+            {
+                "id": "publicationDate",
+                "name": "Publication Date",
+                "config": [
+                    "Y",
+                    "M"
+                ]
+            },
+            {
+                "id": "legislationType",
+                "name": "LegislationType"
+            }
+        ]
+    }
+}
