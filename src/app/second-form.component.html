@@ -1,41 +1,53 @@
-<p>
-    Dynamic (Reactive) form
-</p>
-<form [formGroup]="form">
-    <p-panel *ngFor="let filter of filters" [header]="filter.name">
-        <div [ngSwitch]="filter.type">
-            <div *ngSwitchCase="'flag'">
-                <label>{{filter.name}}</label>
-                <p-triStateCheckbox [name]="filter.id" [formControlName]="filter.id"></p-triStateCheckbox>
-            </div>
-            <div *ngSwitchCase="'singleChoice'">
-                <p-dropdown [options]="options[filter.id]" [formControlName]="filter.id"></p-dropdown>
-            </div>
-            <div *ngSwitchCase="'multiChoice'">
-                <p-multiSelect  [options]="options[filter.id]" [formControlName]="filter.id"></p-multiSelect>
-            </div>
-            <div *ngSwitchDefault>
-                An error Unknwon filter type: {{filter.type}} for filter: {{filter.name}}
-            </div>
+<div fxLayout="column" fxLayoutAlign="start stretch" style="background-color: navy"
+     style="position:relative; height:100%">
+    <p fxFlex="0 0 auto">
+        Dynamic (Reactive) form
+    </p>
+    <div fxFlex='1 0' fxLayout="row" fxLayoutAlign="start stretch" style="background-color: lightgray">
+        <div fxFlex="0 0 auto">
+            <form [formGroup]="form" >
+                <p-panel *ngFor="let filter of filters" [header]="filter.name">
+                    <div [ngSwitch]="filter.type">
+                        <div *ngSwitchCase="'flag'">
+                            <label>{{filter.name}}</label>
+                            <p-triStateCheckbox [name]="filter.id" [formControlName]="filter.id"></p-triStateCheckbox>
+                        </div>
+                        <div *ngSwitchCase="'singleChoice'">
+                            <p-dropdown [options]="options[filter.id]" [formControlName]="filter.id"></p-dropdown>
+                        </div>
+                        <div *ngSwitchCase="'multiChoice'">
+                            <p-multiSelect [options]="options[filter.id]" [formControlName]="filter.id"></p-multiSelect>
+                        </div>
+                        <div *ngSwitchDefault>
+                            An error Unknwon filter type: {{filter.type}} for filter: {{filter.name}}
+                        </div>
+                    </div>
+                </p-panel>
+            </form>
+            <p-panel header='the Tree'>
+                <p-tree selectionMode="single"
+                        [(selection)]="treeSelection"
+                        [value]="treeContent"
+                        (onNodeSelect)="onNodeSelected($event)"
+                        (onNodeExpand)="onNodeExpand($event)">
+                </p-tree>
+                <button pButton type="button" label="Navigate in tree" (click)="onNavigate()"></button>
+                <button pButton type="button" label="get tree config" (click)="onGetTreeConfig()"></button>
+            </p-panel>
         </div>
-    </p-panel>
-    <p-panel header = 'the Tree'>
-        <p-tree selectionMode="single"
-                [(selection)]="treeSelection"
-                [value]="treeContent"
-                (onNodeSelect)="onNodeSelected($event)"
-                (onNodeExpand)="onNodeExpand($event)">
-        </p-tree>
-        <button pButton type="button" label="Navigate in tree" (click)="onNavigate()"></button>
-        <button pButton type="button" label="get tree config" (click)="onGetTreeConfig()"></button>
-    </p-panel>
-</form>
-<p-panel header="(Debug) --> Model contents">
+        <div fxFlex="1 0" fxFlexAlign="start" style="background-color: yellow">
+            Something big is happening here
+            <p>a</p>
+            <p>a</p>
+        </div>
+    </div>
+    <p-panel fxFlex="0 0 auto" header="(Debug) --> Model contents">
     <pre>Form Filter
 {{ form.value | json}}
 Global Filter
 {{ globalFilter | json}}
     </pre>
-</p-panel>
+    </p-panel>
 
 
+</div>

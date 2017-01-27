@@ -1,8 +1,14 @@
-<h1>
-  {{title}}
-</h1>
-<nav>
-    <a routerLink="/static" routerLinkActive="active">static form</a>
-    <a routerLink="/dynamic" routerLinkActive="active">dynamic form</a>
-</nav>
-<router-outlet></router-outlet>
+<div class="flex-container" fxLayout="column" fxLayoutAlign="start stretch" style="background-color: aqua ;position:absolute;left:0; right:0; top:0; bottom:0">
+    <div class='flex-item' style="background-color:springgreen">
+        <h1>
+            {{title}}
+        </h1>
+        <nav>
+            <a routerLink="/static" routerLinkActive="active">static form</a>
+            <a routerLink="/dynamic" routerLinkActive="active">dynamic form</a>
+        </nav>
+    </div>
+    <div class='flex-item' style="background-color: coral"  fxFlex="1 0">
+        <router-outlet></router-outlet>
+    </div>
+</div>

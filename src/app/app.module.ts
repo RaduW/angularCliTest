@@ -14,7 +14,7 @@ import {SecondFormComponent} from './second-form.component';
 import {UiSettingsService} from "./service/ui-settings.service";
 import {HierarchyService} from "./service/hierarchy.service";
 import {TreeHierarchyAdapterService} from "./service/tree-hierarchy-adapter.service";
-
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 const appRoutes: Routes = [
     {path: "static", component: FirstFormComponent},
@@ -32,6 +32,7 @@ const appRoutes: Routes = [
         BrowserModule,
         FormsModule, ReactiveFormsModule,
         HttpModule,
+        FlexLayoutModule.forRoot(),
         //PrimeNg modules
         TriStateCheckboxModule, CheckboxModule, FieldsetModule, PanelModule, MultiSelectModule, DropdownModule,
         ButtonModule, TreeModule
