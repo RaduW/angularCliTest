@@ -2,24 +2,22 @@
     Static form
 </p>
 <div>
-    <form>
+    <form >
         <p-panel header="Some tri-state">
             <label>A tri state</label>
-            <p-triStateCheckbox name="someTriState" [(ngModel)]="triState"></p-triStateCheckbox>
+            <p-triStateCheckbox name="threeState" ngModel></p-triStateCheckbox>
         </p-panel>
         <p-panel header="Some Options">
-            <p-checkbox *ngFor="let option of allOptions" name="theThing" [value]="option.value" [label]="option.label" [(ngModel)]="checkOptions"></p-checkbox>
+            <p-checkbox name='checkBoxes' [ngModel]="i1" *ngFor="let option of allOptions" [value]="option.value" [label]="option.label" ></p-checkbox>
         </p-panel>
         <p-panel header="Multi Select">
-            <p-multiSelect name="theOtherThing" [options]="allOptions"  [(ngModel)]="multiOptions" ></p-multiSelect>
+            <p-multiSelect name="multiSelect" [options]="allOptions" [ngModel]="i2"></p-multiSelect>
         </p-panel>
         <p-panel header="Single Select">
-            <p-dropdown name="theOtherThing" [options]="allOptionsAndNull"  [(ngModel)]="singleOption" ></p-dropdown>
+            <p-dropdown name="singleSelect" [options]="allOptionsAndNull"  ngModel></p-dropdown>
         </p-panel>
     </form>
     <p-panel header="Model raw">
-        <pre>Tri State {{ triState| json }}
-CheckBox {{ checkOptions| json }}
-MultiSelect {{ multiOptions | json }}</pre>
+        <pre>{{ f.form.value | json}}</pre>
     </p-panel>
 </div>

@@ -1,5 +1,5 @@
-import {Component, OnInit} from '@angular/core';
-import {FormGroup} from "@angular/forms";
+import {Component, OnInit, Input, ViewChild} from '@angular/core';
+import {FormGroup, NgForm} from "@angular/forms";
 
 import {SelectItem} from 'primeng/primeng';
 
@@ -12,23 +12,21 @@ import {SelectItem} from 'primeng/primeng';
 })
 export class FirstFormComponent implements OnInit {
 
-    formGroup: FormGroup;
-    checkOptions:string[];
-    multiOptions:string[];
-    triState?:boolean;
     allOptions:SelectItem[];
     allOptionsAndNull:SelectItem[];
-    singleOption?:string;
-
+    i1:any;
+    i2:any;
+    
+    @ViewChild(NgForm)
+    f: NgForm;
+    
     constructor() {
-
+        this.i1 =[];
+        this.i2=[];
     }
-
+    
+    
     ngOnInit() {
-        this.formGroup = null;
-        this.checkOptions= [];
-        this.multiOptions= [];
-        this.triState= null;
 
         this.allOptionsAndNull = [
             {label:'Choose', value:null},
